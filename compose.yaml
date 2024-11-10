@@ -1,0 +1,33 @@
+services:
+  nginx:
+    image: nginx:1.27
+    ports:
+      - '8000:80'
+    volumes:
+      - ./src:/src
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - php-fpm
+  php-fpm:
+    build: docker/php
+    volumes:
+      - ./src:/src
+      - ./docker/php/php-fpm/php-fpm.conf:/usr/local/etc/php-fpm.conf
+      - ./docker/php/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+    working_dir: /src
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_PASSWORD: pass
+      POSTGRES_USER: app
+      POSTGRES_DB: app
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "app" ]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+
