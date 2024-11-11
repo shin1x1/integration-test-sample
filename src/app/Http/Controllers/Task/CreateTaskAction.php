@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Http\Controllers\Task;
@@ -11,11 +12,25 @@ final class CreateTaskAction
 {
     public function __invoke(Request $request): JsonResponse
     {
+        $validated = $request->validate([
+            'title' => 'required',
+            'description' => 'required',
+            'due_date' => 'nullable|date',
+            'is_completed' => 'required|boolean',
+            'assigned_user_id' => 'required|exists:users,id',
+        ]);
+
+        $assignedUserId = $validated['assigned_user_id'];
+        if (Task::hasIncompleteTaskAssigned($assignedUserId)) {
+            return response()->json(['message' => 'このユーザには進行中のタスクがアサインされています'], 400);
+        }
+
         $task = new Task();
-        $task->title = $request->input('title');
-        $task->description = $request->input('description');
-        $task->due_date = $request->input('due_date');
-        $task->is_completed = $request->input('is_completed');
+        $task->title = $validated['title'];
+        $task->description = $validated['description'];
+        $task->due_date = $validated['due_date'] ?? null;
+        $task->is_completed = $validated['is_completed'] ?? false;
+        $task->assigned_user_id = $assignedUserId;
         $task->save();
 
         return response()->json(['id' => $task->id], 201);

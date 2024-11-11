@@ -17,6 +17,7 @@ return new class extends Migration
             $table->text('description')->default('');
             $table->date('due_date')->nullable();
             $table->boolean('is_completed')->default(false);
+            $table->foreignId('assigned_user_id')->constrained('users');
             $table->timestamps();
         });
     }
