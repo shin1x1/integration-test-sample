@@ -21,5 +21,5 @@ jobs:
         uses: mikepenz/action-junit-report@v4
         if: success() || failure()
         with:
-          report_paths: 'phpunit-log.xml'
+          report_paths: 'src/phpunit-log.xml'
           check_name: 'PHPUnit Test Results'
