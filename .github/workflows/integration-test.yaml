@@ -11,6 +11,8 @@ on:
 jobs:
   run-tests:
     runs-on: ubuntu-latest
+    permissions:
+      checks: write
     steps:
       - uses: actions/checkout@v4
       - name: Setup application
