@@ -15,4 +15,4 @@ down:
 
 .PHONY: test
 test:
-	docker compose exec php-fpm php artisan test
+	docker compose exec php-fpm ./vendor/bin/phpunit
