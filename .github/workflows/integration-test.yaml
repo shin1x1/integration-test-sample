@@ -1,0 +1,27 @@
+name: Integration Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup application
+        run: make
+      - name: Run tests
+        run: docker compose exec php-fpm ./vendor/bin/phpunit --log-junit phpunit-log.xml
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v4
+        if: success() || failure()
+        with:
+          report_paths: 'src/phpunit-log.xml'
+          check_name: 'PHPUnit Test Results'
