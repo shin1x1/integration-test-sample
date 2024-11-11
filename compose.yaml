@@ -30,4 +30,15 @@ services:
       interval: 1s
       timeout: 5s
       retries: 10
+  db-test:
+    image: postgres:17
+    environment:
+      POSTGRES_PASSWORD: pass
+      POSTGRES_USER: app
+      POSTGRES_DB: app
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "app" ]
+      interval: 1s
+      timeout: 5s
+      retries: 10
 
